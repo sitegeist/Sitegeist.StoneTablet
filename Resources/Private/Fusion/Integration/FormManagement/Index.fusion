@@ -1,0 +1,41 @@
+prototype(Sitegeist.StoneTablet:Module.FormManagement.Index) < prototype(Neos.Fusion:Component) {
+
+    renderer = afx`
+        <h2 style="margin-bottom:2em;">Formular-Export</h2>
+
+        <Neos.Fusion.Form:Form form.data.startDate={startDate} form.data.endDate={endDate} form.data.formId={formId} form.target.action={targetAction} >
+            <div class="neos-control-group neos-row">
+                <div class="neos-span8">
+                    <Neos.Fusion.Form:Neos.BackendModule.FieldContainer attributes.class="neos-buffer-below" field.name="formId" label="Formulare*">
+                        <Neos.Fusion.Form:Select attributes.class="neos-input-block-level" attributes.required="required">
+                            <Neos.Fusion.Form:Select.Option
+                                attributes.disabled={disabled}
+                                option.value=''
+                            >
+                                Bitte ein Formular auswählen:
+                            </Neos.Fusion.Form:Select.Option>
+                            <Neos.Fusion:Loop items={formLocators} itemName="formLocator">
+                                <Neos.Fusion.Form:Select.Option
+                                    option.value={formLocator.formId}
+                                >
+                                    {(formLocator.title ? formLocator.title : formLocator.formId) + ' ('  + formLocator.path + ' )'}
+                                </Neos.Fusion.Form:Select.Option>
+                            </Neos.Fusion:Loop>
+                        </Neos.Fusion.Form:Select>
+                    </Neos.Fusion.Form:Neos.BackendModule.FieldContainer>
+                    <div class="neos-buffer-below">
+                        <div class="neos-row-fluid neos-buffer-below">
+                            <Neos.Fusion.Form:Neos.BackendModule.FieldContainer attributes.class="neos-buffer-below" field.name="startDate" label="Datum von:">
+                                <Neos.Fusion.Form:Date />
+                            </Neos.Fusion.Form:Neos.BackendModule.FieldContainer>
+                            <Neos.Fusion.Form:Neos.BackendModule.FieldContainer attributes.class="neos-buffer-below" field.name="endDate" label="Datum bis:">
+                                <Neos.Fusion.Form:Date />
+                            </Neos.Fusion.Form:Neos.BackendModule.FieldContainer>
+                        </div>
+                        <Neos.Fusion.Form:Button>Datei Exportieren</Neos.Fusion.Form:Button>
+                    </div>
+                </div>
+            </div>
+        </Neos.Fusion.Form:Form>
+    `
+}

@@ -1,0 +1,9 @@
+prototype(Sitegeist.StoneTablet:Action.RegisterAssembledForm.Definition) < prototype(Neos.Fusion:Component) {
+    renderer = Sitegeist.PaperTiger:Action {
+        type = 'Sitegeist.StoneTablet.Runtime:RegisterForm'
+        options {
+            formData = ${data}
+            formNode = ${assembledFormNode}
+        }
+    }
+}

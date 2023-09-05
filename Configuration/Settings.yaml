@@ -1,0 +1,10 @@
+Neos:
+  Neos:
+    fusion:
+      autoInclude:
+        Sitegeist.StoneTablet: true
+    Ui:
+      resources:
+        javascript:
+          '@sitegeist/stonetablet-editors':
+            resource: 'resource://Sitegeist.StoneTablet/Public/Neos.Ui/Plugin.js'

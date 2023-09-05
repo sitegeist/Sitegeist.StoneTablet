@@ -1,0 +1,13 @@
+prototype(Sitegeist.PaperTiger:ActionCollection.Definition) {
+    @context.registerAction = Sitegeist.PaperTiger:Action
+    renderer.actionMap.items.@process.pushRegisterAction = ${Array.push(value, registerAction)}
+    renderer.actionMap.items.@process.pushRegisterAction.@if.isExportable = ${q(node).property('isExportable')}
+    renderer.actionMap.@context.assembledFormNode = ${node}
+}
+
+prototype(Sitegeist.PaperTiger:ActionCollection.Definition.ContentCase) {
+    registerAction {
+        condition = ${ node == registerAction}
+        type = 'Sitegeist.StoneTablet:Action.RegisterAssembledForm.Definition'
+    }
+}

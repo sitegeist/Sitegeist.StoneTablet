@@ -1,0 +1,24 @@
+prototype(Neos.Fusion.Form:Runtime.RuntimeForm) {
+    action {
+        register {
+            type = 'Sitegeist.StoneTablet.Runtime:RegisterForm'
+            options {
+                formData = ${data}
+                formNode = ${node}
+                excludedFields = ${q(node).property('excludedFields')}
+            }
+        }
+        register.@if.isExportable = ${q(node).property('isExportable')}
+    }
+}
+
+
+prototype(Nordmann.NordmannGlobal:Document.WebPage) < prototype(Neos.Fusion:Component) {
+    renderer = Nordmann.NordmannGlobal:Document.Base {
+        body = Nordmann.Shared:Layout.Page {
+            presentationObject = ${Nordmann.Page.forWebPage(documentNode, documentNode.context, documentNode.context.inBackend)}
+        }
+    }
+
+    renderer.body.@process.addTextText = ${value + "Wir sind in StoneTablet"}
+}
