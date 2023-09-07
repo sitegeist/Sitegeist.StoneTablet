@@ -19,6 +19,4 @@ prototype(Nordmann.NordmannGlobal:Document.WebPage) < prototype(Neos.Fusion:Comp
             presentationObject = ${Nordmann.Page.forWebPage(documentNode, documentNode.context, documentNode.context.inBackend)}
         }
     }
-
-    renderer.body.@process.addTextText = ${value + "Wir sind in StoneTablet"}
 }

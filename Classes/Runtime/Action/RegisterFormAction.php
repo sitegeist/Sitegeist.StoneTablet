@@ -9,12 +9,10 @@ declare(strict_types=1);
 namespace Sitegeist\StoneTablet\Runtime\Action;
 
 use Neos\ContentRepository\Domain\Model\Node;
-use Neos\ContentRepository\Domain\NodeAggregate\NodeName;
-use Neos\ContentRepository\Domain\Projection\Content\TraversableNodeInterface;
-use Neos\Eel\FlowQuery\FlowQuery;
 use Neos\Flow\Mvc\ActionResponse;
 use Neos\Flow\Utility\Algorithms;
 use Neos\Fusion\Form\Runtime\Action\AbstractAction;
+use Sitegeist\StoneTablet\Domain\Form\Field;
 use Sitegeist\StoneTablet\Domain\Form\FormRegistration;
 use Sitegeist\StoneTablet\Domain\Form\FormRegistrationRepository;
 
@@ -28,30 +26,21 @@ class RegisterFormAction extends AbstractAction
 
     public function perform(): ?ActionResponse
     {
-        /** @var TraversableNodeInterface $formNode */
+        /** @var Node $formNode */
         $formNode = $this->options['formNode'];
 
         $formData = $this->prepareFormDataForSerialisation($this->options['formData']);
 
-        $fieldsCollection = $formNode->findNamedChildNode(NodeName::fromString('fields'));
-        $excludedFields = array_filter(
-            array_map(
-                function (Node $field) {
-                    return match ((string)$field->getNodeTypeName()) {
-                        'Sitegeist.PaperTiger:Field.Honeypot',
-                        'Sitegeist.PaperTiger:Field.FriendlyCaptcha'
-                            => (string)$field->getNodeAggregateIdentifier(),
-                        'Sitegeist.PaperTiger:Field.Button',
-                        'Sitegeist.PaperTiger:Field.Upload'
-                            => $field->getProperty('name'),
-
-                        default => null
-                    };
-                },
-                /** @phpstan-ignore-next-line */
-                (new FlowQuery([$fieldsCollection]))->find('[instanceof Sitegeist.PaperTiger:Field]')->get()
-            )
+        $excludedFields = array_map(
+            fn($excludedField) => Field::fromArray($excludedField)->name,
+            $formNode->getProperty('excludedFields') ?: []
         );
+
+        foreach ($formData as $fieldName => $fieldValue) {
+            if (is_object($fieldValue)) {
+                $excludedFields[] = $fieldName;
+            }
+        }
 
         $this->formRegistrationRepository->add(
             new FormRegistration(

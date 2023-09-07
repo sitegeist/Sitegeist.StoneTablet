@@ -30,7 +30,7 @@ final class FormRegistrationExport
         $spreadsheet = new Spreadsheet();
         $metaHeaderRow = $spreadsheet->getActiveSheet()->getRowIterator(1)->current();
         $currentRowIndex = $metaHeaderRow->getRowIndex();
-        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Titel');
+        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Title');
         $metaHeaderRow->getWorksheet()->getCell('B' . $currentRowIndex)->setValue(
             $this->formLocator->title
                 ? $this->formLocator->title . ' (' . $this->formLocator->formId . ')'
@@ -39,14 +39,14 @@ final class FormRegistrationExport
         $spreadsheet->getActiveSheet()->insertNewRowBefore(2, 1);
         $headerRow = $spreadsheet->getActiveSheet()->getRowIterator(2)->current();
         $currentRowIndex = $headerRow->getRowIndex();
-        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Pfad');
+        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Path');
         $metaHeaderRow->getWorksheet()->getCell('B' . $currentRowIndex)->setValue(
             $this->formLocator->path ?: ''
         );
         $spreadsheet->getActiveSheet()->insertNewRowBefore(3, 1);
         $headerRow = $spreadsheet->getActiveSheet()->getRowIterator(3)->current();
         $currentRowIndex = $headerRow->getRowIndex();
-        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Datum des Exports');
+        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Export Date');
         $metaHeaderRow->getWorksheet()->getCell('B' . $currentRowIndex)->setValue(
             $this->exportDate->format('Y-m-d H:i:s')
         );
@@ -60,7 +60,7 @@ final class FormRegistrationExport
             $column++;
         }
         if ($fieldNames) {
-            $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue('Anfragedatum');
+            $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue('Request Date');
         }
         $currentRowIndex = 5;
         $spreadsheet->getActiveSheet()->insertNewRowBefore(5, $this->registrations->count());

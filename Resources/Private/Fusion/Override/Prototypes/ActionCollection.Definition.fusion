@@ -1,13 +1,14 @@
 prototype(Sitegeist.PaperTiger:ActionCollection.Definition) {
-    @context.registerAction = Sitegeist.PaperTiger:Action
-    renderer.actionMap.items.@process.pushRegisterAction = ${Array.push(value, registerAction)}
-    renderer.actionMap.items.@process.pushRegisterAction.@if.isExportable = ${q(node).property('isExportable')}
-    renderer.actionMap.@context.assembledFormNode = ${node}
+    @context.stoneTabletRegisterAction = Sitegeist.PaperTiger:Action
+    renderer.actionMap.items.@process.pushStoneTabletRegisterAction = ${Array.push(value, stoneTabletRegisterAction)}
+    renderer.actionMap.items.@process.pushStoneTabletRegisterAction.@if.isExportable = ${q(node).property('isExportable')}
+    renderer.actionMap.@context.paperTigerFormNode = ${node}
+
 }
 
 prototype(Sitegeist.PaperTiger:ActionCollection.Definition.ContentCase) {
-    registerAction {
-        condition = ${ node == registerAction}
+    registerPeperTigerFormAction {
+        condition = ${ node == stoneTabletRegisterAction}
         type = 'Sitegeist.StoneTablet:Action.RegisterAssembledForm.Definition'
     }
 }

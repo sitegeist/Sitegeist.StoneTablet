@@ -3,7 +3,7 @@ prototype(Sitegeist.StoneTablet:Action.RegisterAssembledForm.Definition) < proto
         type = 'Sitegeist.StoneTablet.Runtime:RegisterForm'
         options {
             formData = ${data}
-            formNode = ${assembledFormNode}
+            formNode = ${paperTigerFormNode}
         }
     }
 }
