@@ -1,14 +1,14 @@
 # Sitegeist.StoneTablet
 ## Form Export Extension for Neos.Fusion.Form and Sitegeist.PaperTiger
 
-This package gives neos editors the option to bind export functionality to fusion forms export them using a backend module as an Excel file.
+This package gives neos editors the to bind export functionality to fusion forms export them using a backend module as an Excel file.
 
 !!! The package does not have any dependency to Sitegeist.PaperTiger but the forms that are assembled using this package are also covered.
 
 
 ### Authors & Sponsors
 
-* Masoud - hedayati@sitegeist.de
+* Masoud Hedayati - hedayati@sitegeist.de
 
 *The development and the public-releases of this package is generously sponsored by our employer http://www.sitegeist.de.*
 
