@@ -4,12 +4,14 @@
   "name": "sitegeist/stonetablet",
   "license": "GPL-3.0+",
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.2",
     "neos/neos": "~8.2 || ~9.0",
     "neos/fusion": "~8.2 || ~9.0",
     "neos/fusion-form": "~2.0",
     "sitegeist/inspectorgadget": "~3.0"
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require-dev": {
     "phpstan/phpstan": "~1.10.16",
     "phpunit/phpunit": "~9.6.8",
