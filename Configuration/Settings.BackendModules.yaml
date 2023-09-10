@@ -1,0 +1,10 @@
+Neos:
+  Neos:
+    modules:
+      'administration':
+        submodules:
+          'formManagement':
+            label: 'Form Export Management'
+            controller: 'Sitegeist\StoneTablet\Application\Controller\FormManagementController'
+            description: 'Backend module for exporting fusion forms'
+            icon: 'fa fa-envelope-open'

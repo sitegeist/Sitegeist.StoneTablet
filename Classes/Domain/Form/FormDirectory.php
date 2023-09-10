@@ -41,13 +41,16 @@ final class FormDirectory
             )->get();
 
             foreach ($formNodes as $formNode) {
-                $nodeIdentifier = (string)$formNode->getNodeAggregateIdentifier();
-                if (!isset($formLocators[$nodeIdentifier])) {
-                    $formLocators[$nodeIdentifier] = FormLocator::fromFormIdentifier(
-                        $nodeIdentifier,
-                        $contentContext
-                    );
+                if ($formNode->getProperty('isExportable')) {
+                    $nodeIdentifier = (string)$formNode->getNodeAggregateIdentifier();
+                    if (!isset($formLocators[$nodeIdentifier])) {
+                        $formLocators[$nodeIdentifier] = FormLocator::fromFormIdentifier(
+                            $nodeIdentifier,
+                            $contentContext
+                        );
+                    }
                 }
+
             }
         }
         return $formLocators;

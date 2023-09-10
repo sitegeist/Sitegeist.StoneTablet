@@ -1,0 +1,12 @@
+# Security policy for the Sitegeist.StoneTablet package
+privilegeTargets:
+  'Neos\Neos\Security\Authorization\Privilege\ModulePrivilege':
+    'Sitegeist.StoneTablet:FormManagement':
+      matcher: 'administration/formManagement'
+
+roles:
+  'Neos.Neos:Administrator':
+    privileges:
+      -
+        privilegeTarget: 'Sitegeist.StoneTablet:FormManagement'
+        permission: GRANT
