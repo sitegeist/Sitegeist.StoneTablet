@@ -5,8 +5,8 @@
   "license": "GPL-3.0+",
   "require": {
     "php": ">=8.1",
-    "neos/neos": "~8.2 || ~9.0",
-    "neos/fusion": "~8.2 || ~9.0",
+    "neos/neos": "~8.2",
+    "neos/fusion": "~8.2",
     "neos/fusion-form": "~2.0",
     "sitegeist/inspectorgadget": "~2.0"
   },
