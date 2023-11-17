@@ -16,6 +16,8 @@ This package gives neos editors the option to bind export functionality to fusio
 
 Sitegeist.PaperTiger is available via packagist run `composer require sitegeist/stonetablet` to install.
 
+To create the required tables run `./flow doctrine:migrate`
+
 We use semantic-versioning so every breaking change will increase the major-version number.
 
 ## Usage 
@@ -24,7 +26,7 @@ Forms need to adjust their configuration in order to be able to register themsel
 
 ## Configuration
 In order to bind the functionality to a form the package adds the `Sitegeist.StoneTablet:Mixin.ExportableForm` to Neos cms.
-Forms which inherit the mentioned mixin, possess some new properties to determine if and how a form must be exported
+Forms which inherit the mixin, possess some new properties to determine if and how a form must be exported.
 
 ```yaml
 Acme.Demo:FusionOrPaperTigerForm:
@@ -46,9 +48,9 @@ Field names of submit button, Friendly Captcha and privacy policy are best cases
 
 ### Upload Fields
 
-Upload Fields are not included in the export. It can be a seen as a very handy feature to be added in the next releases.
+Upload Fields are also included in the export. As a result the exported archive file contains an Excel file along with all upload fields in a separate directory.
 
 ## Export Backend Module
 
-Form Export Management is he corresponding backend module to export submitted forms over a specific period of time.   
+Form Export Management is the corresponding backend module to export submitted forms over a specific period of time.   
 Removed forms do not appear in the export list anymore but the data remains in the database.

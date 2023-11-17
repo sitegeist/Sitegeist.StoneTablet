@@ -10,17 +10,21 @@ namespace Sitegeist\StoneTablet\Runtime\Action;
 
 use Neos\ContentRepository\Domain\Model\Node;
 use Neos\Flow\Mvc\ActionResponse;
+use Neos\Flow\ResourceManagement\PersistentResource;
 use Neos\Flow\Utility\Algorithms;
 use Neos\Fusion\Form\Runtime\Action\AbstractAction;
 use Sitegeist\StoneTablet\Domain\Form\Field;
 use Sitegeist\StoneTablet\Domain\Form\FormRegistration;
 use Sitegeist\StoneTablet\Domain\Form\FormRegistrationRepository;
+use Sitegeist\StoneTablet\Domain\Form\RegisteredUploadField;
+use Sitegeist\StoneTablet\Domain\Archive;
 
 class RegisterFormAction extends AbstractAction
 {
     public const DATE_FORMAT = 'Y-m-d';
     public function __construct(
-        private readonly FormRegistrationRepository $formRegistrationRepository
+        private readonly FormRegistrationRepository $formRegistrationRepository,
+        private readonly Archive $archive
     ) {
     }
 
@@ -29,7 +33,7 @@ class RegisterFormAction extends AbstractAction
         /** @var Node $formNode */
         $formNode = $this->options['formNode'];
 
-        $formData = $this->prepareFormDataForSerialisation($this->options['formData']);
+        $formData = $this->prepareFormDataForSerialization($this->options['formData']);
 
         $excludedFields = array_map(
             fn($excludedField) => Field::fromArray($excludedField)->name,
@@ -58,12 +62,16 @@ class RegisterFormAction extends AbstractAction
      * @param array<string,mixed> $formData
      * @return array<string,mixed>
      */
-    private function prepareFormDataForSerialisation(array $formData): array
+    private function prepareFormDataForSerialization(array $formData): array
     {
         return array_map(
-            fn (mixed $fieldValue) => $fieldValue instanceof \DateTimeInterface
-                ? $fieldValue->format(self::DATE_FORMAT)
-                : $fieldValue,
+            fn (mixed $fieldValue) => match (true) {
+                $fieldValue instanceof \DateTimeInterface
+                    => $fieldValue->format(self::DATE_FORMAT),
+                $fieldValue instanceof PersistentResource
+                    => (string)RegisteredUploadField::fromResource($fieldValue),
+                default => $fieldValue
+            },
             $formData
         );
     }
