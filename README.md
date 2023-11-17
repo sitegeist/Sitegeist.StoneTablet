@@ -14,7 +14,7 @@ This package gives neos editors the option to bind export functionality to fusio
 
 ## Installation
 
-Sitegeist.PaperTiger is available via packagist run `composer require sitegeist/stonetablet` to install.
+Sitegeist.StoneTablet is available via packagist run `composer require sitegeist/stonetablet` to install.
 
 To create the required tables run `./flow doctrine:migrate`
 
