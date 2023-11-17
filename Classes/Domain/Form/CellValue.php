@@ -27,6 +27,7 @@ final class CellValue
     public static function fromFormData(array $formData, string $fieldName): self
     {
         $fieldValue = $formData[$fieldName] ?? null;
+
         return new self(
             $fieldValue
                 ? is_array($fieldValue) ? implode("\n", $fieldValue) : $fieldValue

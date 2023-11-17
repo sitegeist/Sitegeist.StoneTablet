@@ -12,6 +12,8 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Utility\Files;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as ExcelWriter;
+use Sitegeist\StoneTablet\Domain\ExportDirectory;
+use Sitegeist\StoneTablet\Domain\Archive;
 
 #[Flow\Proxy(false)]
 final class FormRegistrationExport
@@ -20,7 +22,8 @@ final class FormRegistrationExport
         public readonly \DateTimeImmutable $exportDate,
         public readonly FormRegistrations  $registrations,
         public readonly FormLocator        $formLocator,
-        public readonly FormDirectory      $formDirectory
+        public readonly FormDirectory      $formDirectory,
+        private readonly Archive $archive
     ) {
     }
 
@@ -55,6 +58,8 @@ final class FormRegistrationExport
         $headerRow = $spreadsheet->getActiveSheet()->getRowIterator(4)->current();
         $currentRowIndex = $headerRow->getRowIndex();
         $column = 'A';
+        $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue('Identifier');
+        $column++;
         foreach ($fieldNames as $fieldName) {
             $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue($fieldName);
             $column++;
@@ -64,16 +69,46 @@ final class FormRegistrationExport
         }
         $currentRowIndex = 5;
         $spreadsheet->getActiveSheet()->insertNewRowBefore(5, $this->registrations->count());
+        $exportDirectory = ExportDirectory::create();
+
         foreach ($this->registrations as $registration) {
             $column = 'A';
-            $currentRow = $spreadsheet->getActiveSheet()->getRowIterator($currentRowIndex)->current();
+            $metaHeaderRow->getWorksheet()->getCell(
+                $column . $currentRowIndex
+            )->setValue(
+                $registration->identifier
+            );
+            $column++;
             $currentRegistrationFields = $registration->formData;
+
             foreach ($fieldNames as $fieldName) {
-                $metaHeaderRow->getWorksheet()->getCell(
-                    $column . $currentRowIndex
-                )->setValue(
-                    CellValue::fromFormData($currentRegistrationFields, $fieldName)->value
-                );
+                $fieldValue = $currentRegistrationFields[$fieldName] ?? null;
+
+                if ($fieldValue && str_starts_with($fieldValue, RegisteredUploadField::CELL_PREFIX) ) {
+                    $registeredUploadField = new RegisteredUploadField($fieldValue);
+
+                    $fileName = $this->archive->exportResourceFromRegisteredUploadField(
+                        $registeredUploadField,
+                        $exportDirectory
+                    );
+
+                    $metaHeaderRow->getWorksheet()->getCell(
+                        $column . $currentRowIndex
+                    )->getHyperlink()->setUrl('./' . ExportDirectory::UPLOADS . $registeredUploadField->extractExportFileName());
+
+                    $metaHeaderRow->getWorksheet()->getCell(
+                        $column . $currentRowIndex
+                    )->setValue(
+                        $fileName
+                    );
+                } else {
+                    $metaHeaderRow->getWorksheet()->getCell(
+                        $column . $currentRowIndex
+                    )->setValue(
+                        CellValue::fromFormData($currentRegistrationFields, $fieldName)->value
+                    );
+                }
+
                 $column++;
             }
             $metaHeaderRow->getWorksheet()->getCell(
@@ -81,21 +116,22 @@ final class FormRegistrationExport
             )->setValue(
                 $registration->recordedAt->format(FormRegistrationRepository::DATE_FORMAT)
             );
+
             $currentRowIndex++;
         }
-
-        $date = new \DateTime('now');
-        $filePathAndName =
-            /** @phpstan-ignore-next-line */
-            FLOW_PATH_DATA .
-            'Temporary/Form-Export-'
-            . $date->format('Y-m-d_H-i') .  '.xlsx';
+        $excelPathAndName = $exportDirectory->path . basename($exportDirectory->path) .  '.xlsx';
         $writer = new ExcelWriter($spreadsheet);
-        $writer->save($filePathAndName);
-        $result = Files::getFileContents($filePathAndName);
-        unlink($filePathAndName);
+        $writer->save($excelPathAndName);
 
-        return $result;
+        $zipFilePath = $this->archive->compressExportDirectory($exportDirectory);
+
+        if ($zipFilePath) {
+            $result = Files::getFileContents($zipFilePath);
+            Files::removeDirectoryRecursively(ExportDirectory::EXPORT_ROOT);
+            return $result;
+        }
+
+        return '';
     }
 
     /**

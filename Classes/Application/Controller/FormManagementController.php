@@ -17,6 +17,7 @@ use Sitegeist\StoneTablet\Domain\Form\FormRegistrationExport;
 use Sitegeist\StoneTablet\Domain\Form\FormRegistrationExportQuery;
 use Sitegeist\StoneTablet\Domain\Form\FormRegistrationRepository;
 use Sitegeist\StoneTablet\Domain\Form\FormWasNotFound;
+use Sitegeist\StoneTablet\Domain\Archive;
 
 class FormManagementController extends AbstractModuleController
 {
@@ -27,9 +28,10 @@ class FormManagementController extends AbstractModuleController
 
     #[Flow\Inject]
     protected FormRegistrationRepository $formRegistrationRepository;
-
     #[Flow\Inject]
     protected FormDirectory $formDirectory;
+    #[Flow\Inject]
+    protected  Archive $archive;
 
     public function indexAction(): void
     {
@@ -60,18 +62,19 @@ class FormManagementController extends AbstractModuleController
             new \DateTimeImmutable(),
             $registrations,
             $formLocator,
-            $this->formDirectory
+            $this->formDirectory,
+            $this->archive
         );
 
 
         ob_clean();
         $content = $export->createExcelContent();
-        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Type: application/zip");
         header(
             'Content-Disposition: attachment; filename='
             . ($formLocator->title ?: $formLocator->formId) . '-Export-'
             . ($startDate ? $startDate . '_' : '')  . ($endDate ?: $export->exportDate->format('Y-m-d'))
-            . '.xlsx'
+            . '.zip'
         );
         header("Content-Length: " . strlen($content));
         echo($content);
