@@ -43,9 +43,11 @@ class FormLocator
             )
         );
 
+        $formTitle = $formNode->getProperty('formTitle') ?? $formNode->getLabel();
+
         return new self(
             $formId,
-            $formNode->getProperty('title'),
+            $formTitle,
             $path
         );
     }

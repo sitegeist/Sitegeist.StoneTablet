@@ -9,14 +9,14 @@
           position: start 10
 
   properties:
-    title:
+    formTitle:
       type: string
       ui:
         label: 'Form Titel'
         inspector:
           group: export
-      validation:
-        'Neos.Neos/Validation/NotEmptyValidator': { }
+          editorOptions:
+            placeholder: 'ClientEval: node.label'
     isExportable:
       type: boolean
       defaultValue: false
