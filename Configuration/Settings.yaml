@@ -8,3 +8,7 @@ Neos:
         javascript:
           '@sitegeist/stonetablet-editors':
             resource: 'resource://Sitegeist.StoneTablet/Public/Neos.Ui/Plugin.js'
+
+Sitegeist:
+  StoneTablet:
+    defaultExcludedFields: []
