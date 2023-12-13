@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Sitegeist\StoneTablet\Runtime\Action;
 
+use Neos\Flow\Annotations as Flow;
 use Neos\ContentRepository\Domain\Model\Node;
 use Neos\Flow\Mvc\ActionResponse;
 use Neos\Flow\ResourceManagement\PersistentResource;
@@ -21,6 +22,9 @@ use Sitegeist\StoneTablet\Domain\Archive;
 
 class RegisterFormAction extends AbstractAction
 {
+    #[Flow\InjectConfiguration(path: 'defaultExcludedFields')]
+    protected $defaultExcludedFields;
+
     public const DATE_FORMAT = 'Y-m-d';
     public function __construct(
         private readonly FormRegistrationRepository $formRegistrationRepository,
@@ -36,9 +40,11 @@ class RegisterFormAction extends AbstractAction
         $formData = $this->prepareFormDataForSerialization($this->options['formData']);
 
         $excludedFields = array_map(
-            fn($excludedField) => Field::fromArray($excludedField)->name,
+            fn ($excludedField) => Field::fromArray($excludedField)->name,
             $formNode->getProperty('excludedFields') ?: []
         );
+
+        $excludedFields = array_merge($excludedFields, $this->defaultExcludedFields);
 
         foreach ($formData as $fieldName => $fieldValue) {
             if (is_object($fieldValue)) {
