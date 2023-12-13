@@ -11,12 +11,3 @@ prototype(Neos.Fusion.Form:Runtime.RuntimeForm) {
         register.@if.isExportable = ${q(node).property('isExportable')}
     }
 }
-
-
-prototype(Nordmann.NordmannGlobal:Document.WebPage) < prototype(Neos.Fusion:Component) {
-    renderer = Nordmann.NordmannGlobal:Document.Base {
-        body = Nordmann.Shared:Layout.Page {
-            presentationObject = ${Nordmann.Page.forWebPage(documentNode, documentNode.context, documentNode.context.inBackend)}
-        }
-    }
-}
