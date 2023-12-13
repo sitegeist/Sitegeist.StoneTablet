@@ -72,17 +72,27 @@ final class FormDirectory
 
     private function getContentContexts(): \Iterator
     {
-        $languagePresets = $this->contentDimensionPresetSource->getAllPresets()['language']['presets'];
+        $languagePresets = $this->contentDimensionPresetSource->getAllPresets()['language']['presets'] ?? null;
 
-        foreach (array_keys($languagePresets) as $preset) {
-            $languageValues = $languagePresets[$preset]['values'];
-
-            yield $contentContext = $this->contentContextFactory->create([
-                'dimensions' => ['language' => $languageValues],
-                'targetDimensions' => ['language' => reset($languageValues)],
+        if (empty($languagePresets)) {
+            $contentContext = $this->contentContextFactory->create([
+                'dimensions' => [],
+                'targetDimensions' => [],
                 'invisibleContentShown' => true,
                 'inaccessibleContentShown' => true
             ]);
+            yield $contentContext;
+        } else {
+            foreach (array_keys($languagePresets) as $preset) {
+                $languageValues = $languagePresets[$preset]['values'];
+
+                yield $contentContext = $this->contentContextFactory->create([
+                    'dimensions' => ['language' => $languageValues],
+                    'targetDimensions' => ['language' => reset($languageValues)],
+                    'invisibleContentShown' => true,
+                    'inaccessibleContentShown' => true
+                ]);
+            }
         }
     }
 }
