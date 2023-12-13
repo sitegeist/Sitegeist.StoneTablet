@@ -13,7 +13,7 @@
       type: boolean
       defaultValue: false
       ui:
-        label: "Exportable"
+        label: 'Exportable'
         inspector:
           group: export
           position: 10
