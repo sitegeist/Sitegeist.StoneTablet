@@ -1,8 +1,5 @@
 'Sitegeist.StoneTablet:Mixin.ExportableForm':
   abstract: true
-  superTypes:
-    'Neos.Neos:Content': true
-
   ui:
     inspector:
       groups:
