@@ -40,7 +40,7 @@ To exclude fields per default from the export you have to alter the setting `Sit
 Sitegeist:
   StoneTablet:
     defaultExcludedFields: ['honeypotfield', 'defaultCaptcheField']
-```
+```
 
 ## Inspector
 
