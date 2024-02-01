@@ -20,9 +20,9 @@ final class FormRegistrationExport
 {
     public function __construct(
         public readonly \DateTimeImmutable $exportDate,
-        public readonly FormRegistrations  $registrations,
-        public readonly FormLocator        $formLocator,
-        public readonly FormDirectory      $formDirectory,
+        public readonly FormRegistrations $registrations,
+        public readonly FormLocator $formLocator,
+        public readonly FormDirectory $formDirectory,
         private readonly Archive $archive
     ) {
     }
@@ -31,99 +31,112 @@ final class FormRegistrationExport
     {
         $fieldNames = $this->getFieldNames($this->registrations);
         $spreadsheet = new Spreadsheet();
-        $metaHeaderRow = $spreadsheet->getActiveSheet()->getRowIterator(1)->current();
-        $currentRowIndex = $metaHeaderRow->getRowIndex();
-        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Title');
-        $metaHeaderRow->getWorksheet()->getCell('B' . $currentRowIndex)->setValue(
-            $this->formLocator->title
-                ? $this->formLocator->title . ' (' . $this->formLocator->formId . ')'
-                : $this->formLocator->formId
-        );
-        $spreadsheet->getActiveSheet()->insertNewRowBefore(2, 1);
-        $headerRow = $spreadsheet->getActiveSheet()->getRowIterator(2)->current();
-        $currentRowIndex = $headerRow->getRowIndex();
-        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Path');
-        $metaHeaderRow->getWorksheet()->getCell('B' . $currentRowIndex)->setValue(
-            $this->formLocator->path ?: ''
-        );
-        $spreadsheet->getActiveSheet()->insertNewRowBefore(3, 1);
-        $headerRow = $spreadsheet->getActiveSheet()->getRowIterator(3)->current();
-        $currentRowIndex = $headerRow->getRowIndex();
-        $metaHeaderRow->getWorksheet()->getCell('A' . $currentRowIndex)->setValue('Export Date');
-        $metaHeaderRow->getWorksheet()->getCell('B' . $currentRowIndex)->setValue(
-            $this->exportDate->format('Y-m-d H:i:s')
-        );
+        $exportDirectory = ExportDirectory::create();
 
-        $spreadsheet->getActiveSheet()->insertNewRowBefore(4, 1);
-        $headerRow = $spreadsheet->getActiveSheet()->getRowIterator(4)->current();
-        $currentRowIndex = $headerRow->getRowIndex();
-        $column = 'A';
-        $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue('Identifier');
-        $column++;
+        // Add some data
+        $spreadsheet
+            ->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Title')
+            ->setCellValue(
+                'B1',
+                $this->formLocator->title
+                    ? $this->formLocator->title .
+                        ' (' .
+                        $this->formLocator->formId .
+                        ')'
+                    : $this->formLocator->formId
+            )
+            ->setCellValue('A2', 'Path')
+            ->setCellValue('B2', $this->formLocator->path ?: '')
+            ->setCellValue('A3', 'Export Date')
+            ->setCellValue('B3', $this->exportDate->format('Y-m-d H:i:s'))
+            ->setCellValue('A4', 'Identifier');
+
+        $column = 'B';
         foreach ($fieldNames as $fieldName) {
-            $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue($fieldName);
+            $spreadsheet
+                ->getActiveSheet()
+                ->setCellValue($column . '4', $fieldName);
             $column++;
         }
         if ($fieldNames) {
-            $metaHeaderRow->getWorksheet()->getCell($column . $currentRowIndex)->setValue('Request Date');
+            $spreadsheet
+                ->getActiveSheet()
+                ->setCellValue($column . '4', 'Request Date');
         }
-        $currentRowIndex = 5;
-        $spreadsheet->getActiveSheet()->insertNewRowBefore(5, $this->registrations->count());
-        $exportDirectory = ExportDirectory::create();
 
+        $currentRowIndex = 5;
         foreach ($this->registrations as $registration) {
             $column = 'A';
-            $metaHeaderRow->getWorksheet()->getCell(
-                $column . $currentRowIndex
-            )->setValue(
-                $registration->identifier
-            );
+            $spreadsheet
+                ->getActiveSheet()
+                ->setCellValue(
+                    $column . $currentRowIndex,
+                    $registration->identifier
+                );
             $column++;
             $currentRegistrationFields = $registration->formData;
-
             foreach ($fieldNames as $fieldName) {
                 $fieldValue = $currentRegistrationFields[$fieldName] ?? null;
 
-                if ($fieldValue && str_starts_with($fieldValue, RegisteredUploadField::CELL_PREFIX) ) {
-                    $registeredUploadField = new RegisteredUploadField($fieldValue);
+                if (
+                    $fieldValue &&
+                    str_starts_with(
+                        $fieldValue,
+                        RegisteredUploadField::CELL_PREFIX
+                    )
+                ) {
+                    $registeredUploadField = new RegisteredUploadField(
+                        $fieldValue
+                    );
 
                     $fileName = $this->archive->exportResourceFromRegisteredUploadField(
                         $registeredUploadField,
                         $exportDirectory
                     );
 
-                    $metaHeaderRow->getWorksheet()->getCell(
-                        $column . $currentRowIndex
-                    )->getHyperlink()->setUrl('./' . ExportDirectory::UPLOADS . $registeredUploadField->extractExportFileName());
-
-                    $metaHeaderRow->getWorksheet()->getCell(
-                        $column . $currentRowIndex
-                    )->setValue(
-                        $fileName
-                    );
+                    $spreadsheet
+                        ->getActiveSheet()
+                        ->getCell($column . $currentRowIndex)
+                        ->setValue($fileName)
+                        ->getHyperlink()
+                        ->setUrl(
+                            './' .
+                                ExportDirectory::UPLOADS .
+                                $registeredUploadField->extractExportFileName()
+                        );
                 } else {
-                    $metaHeaderRow->getWorksheet()->getCell(
-                        $column . $currentRowIndex
-                    )->setValue(
-                        CellValue::fromFormData($currentRegistrationFields, $fieldName)->value
-                    );
+                    $spreadsheet
+                        ->getActiveSheet()
+                        ->setCellValue(
+                            $column . $currentRowIndex,
+                            CellValue::fromFormData(
+                                $currentRegistrationFields,
+                                $fieldName
+                            )->value
+                        );
                 }
-
                 $column++;
             }
-            $metaHeaderRow->getWorksheet()->getCell(
-                $column . $currentRowIndex
-            )->setValue(
-                $registration->recordedAt->format(FormRegistrationRepository::DATE_FORMAT)
-            );
-
+            $spreadsheet
+                ->getActiveSheet()
+                ->setCellValue(
+                    $column . $currentRowIndex,
+                    $registration->recordedAt->format(
+                        FormRegistrationRepository::DATE_FORMAT
+                    )
+                );
             $currentRowIndex++;
         }
-        $excelPathAndName = $exportDirectory->path . basename($exportDirectory->path) .  '.xlsx';
+
+        $excelPathAndName =
+            $exportDirectory->path . basename($exportDirectory->path) . '.xlsx';
         $writer = new ExcelWriter($spreadsheet);
         $writer->save($excelPathAndName);
 
-        $zipFilePath = $this->archive->compressExportDirectory($exportDirectory);
+        $zipFilePath = $this->archive->compressExportDirectory(
+            $exportDirectory
+        );
 
         if ($zipFilePath) {
             $result = Files::getFileContents($zipFilePath);
