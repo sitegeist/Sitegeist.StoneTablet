@@ -126,6 +126,7 @@ final class FormRegistrationExport
                         FormRegistrationRepository::DATE_FORMAT
                     )
                 );
+            $currentRowIndex++;
         }
 
         $excelPathAndName =
