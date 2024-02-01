@@ -1,45 +1,46 @@
 'Sitegeist.StoneTablet:Mixin.ExportableForm':
   abstract: true
-  superTypes:
-    'Neos.Neos:Content': true
-
   ui:
     inspector:
       groups:
         export:
-          label: 'Export'
+          label: 'Form Export'
           icon: archive
           position: start 10
 
   properties:
-    title:
-      type: string
-      ui:
-        label: 'Form Titel'
-        inspector:
-          group: export
-      validation:
-        'Neos.Neos/Validation/NotEmptyValidator': { }
     isExportable:
       type: boolean
       defaultValue: false
       ui:
-        label: "Exportable"
+        label: 'Exportable'
         inspector:
           group: export
+          position: 10
+    formTitle:
+      type: string
+      ui:
+        label: 'Form Title'
+        inspector:
+          group: export
+          position: 20
+          hidden: 'ClientEval: !node.properties.isExportable'
+          editorOptions:
+            placeholder: 'ClientEval: node.label'
     excludedFields:
       type: array
       ui:
-        label: "Excluded Fields"
+        label: 'Excluded Fields'
         help:
-          message: "Field names which must be excluded from export"
+          message: 'Field names which must be excluded from export'
         inspector:
           group: export
           editor: Sitegeist.InspectorGadget/Inspector/Editor
+          position: 30
+          hidden: 'ClientEval: !node.properties.isExportable'
           editorOptions:
             isCollection: true
             isSortable: true
             itemType: Sitegeist\StoneTablet\Domain\Field
             labels:
               addItem: 'Add Field'
-
